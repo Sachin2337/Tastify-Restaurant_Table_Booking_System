@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>login/signup</title>
+	<link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+	<div class="container" id="container">
+		<div class="form-container sign-up-container">
+			<form action="#">
+				<h1>Create Account</h1>
+				<div class="social-container">
+					<a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
+					<a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
+					<a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+				</div>
+				<span>or use your email for registration</span>
+				<input type="text" placeholder="Name" name="Username" />
+				<input type="email" placeholder="Email" />
+				<input type="password" placeholder="Password" name="Password" />
+				<button>Sign Up</button>
+			</form>
+		</div>
+		<div class="form-container sign-in-container">
+			<form id="signin">
+				<h1>Sign in</h1>
+				<div class="social-container">
+					<a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
+					<a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
+					<a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+				</div>
+				<span>or use your account</span>
+				<input type="text" placeholder="Username" name="username" />
+				<input type="password" placeholder="Password" name="password" />
+				<a href="#">Forgot your password?</a>
+				<button>Sign In</button>
+			</form>
+		</div>
+		<div class="overlay-container">
+			<div class="overlay">
+				<div class="overlay-panel overlay-left">
+					<h1>Welcome Back!</h1>
+					<p>To keep connected with us please login with your personal info</p>
+					<button class="ghost" id="signIn">Sign In</button>
+				</div>
+				<div class="overlay-panel overlay-right">
+					<h1>Hello</h1>
+					<p>Enter your personal details </p>
+					<!-- <button class="ghost" id="signUp">Sign Up</button> -->
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+<script>
+	// const signUpButton = document.getElementById('signUp');
+	// const signInButton = document.getElementById('signIn');
+	// const container = document.getElementById('container');
+
+	// signUpButton.addEventListener('click', () => {
+	// 	container.classList.add("right-panel-active");
+	// });
+
+	// signInButton.addEventListener('click', () => {
+	// 	container.classList.remove("right-panel-active");
+	// });
+
+
+	signin.addEventListener('submit', (e) => {
+		e.preventDefault();
+		const formData = new FormData(signin);
+		for (const [key, value] of formData) {
+			console.log(key, value);
+		}
+
+		let data = {}
+		formData.forEach((value, key) => data[key] = value);
+
+		fetch('http://localhost:3000/api/login/', {
+			method: 'POST',
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(data)
+		}).then((res) => {
+			if (res.ok) {
+				return res.json(); // Return JSON data if response is successful
+			} else {
+				throw new Error('Login failed'); // Throw an error if login fails
+			}
+		})
+			.then((data) => {
+				// Save JWT token to local storage
+				localStorage.setItem('jwtToken', data.token);
+
+				// Reset the signin form
+				signin.reset();
+				window.location.href = 'admin.html';
+			})
+			.catch((error) => {
+				console.error('Login failed:', error);
+				// Handle login failure, e.g., display error message to user
+			});
+	})
+
+</script>
+
+</html>
