@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Tastify - Restaurant </title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="" name="keywords">
+    <meta content="" name="description">
+
+    <!-- Favicon -->
+    <link href="img/favicon.ico" rel="icon">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600&family=Nunito:wght@600;700;800&family=Pacifico&display=swap"
+        rel="stylesheet">
+
+    <!-- Icon Font Stylesheet -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="lib/animate/animate.min.css" rel="stylesheet">
+    <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+    <link href="lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css" rel="stylesheet" />
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Template Stylesheet -->
+    <link href="css/style.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="contenter mt-4">
+        
+        <div class="container mt-5">
+            <h1 class="mb-4">Welcome Admin!</h1>
+
+            <div class="row mb-4">
+                <div class="col-sm-6">
+                    <h2>Manage Reservations</h2>
+                </div>
+                <div class="card-body">
+                    <table class="table table-striped" id="reservationsTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Date&Time</th>
+                                <th>Party Size</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Reservation rows will be populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-sm-6">
+                    <h2>Manage Feedback</h2>
+                </div>
+                <div class="card-body">
+                    <table class="table table-striped" id="feedbackTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Comment</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Feedback rows will be populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-sm-6">
+                    <h2>Manage Menu Items</h2>
+                </div>
+                <div class="card-body">
+                    <table class="table table-striped" id="menuItemsTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Description</th>
+                                <th>Price</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Menu items rows will be populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+
+
+                <div class="container">
+                    <h1 class="mt-5">Add Menu Item</h1>
+                    <form id="addItemForm">
+                        <div class="form-group">
+                            <label for="name" name="name">Name</label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="description">Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="3" name="description" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="price">Price</label>
+                            <input type="number"  name="price" class="form-control" id="price" name="price" min="0" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="availability">Availability Status</label>
+                            <select class="form-control" id="availability" name="availability" name ="availabilityStatus" required>
+                                <option value="available">Available</option>
+                                <option value="unavailable">Unavailable</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="image">Image</label>
+                            <input type="file" class="form-control-file" id="image" name="image">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add Item</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="lib/wow/wow.min.js"></script>
+    <script src="lib/easing/easing.min.js"></script>
+    <script src="lib/waypoints/waypoints.min.js"></script>
+    <script src="lib/counterup/counterup.min.js"></script>
+    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+    <script src="lib/tempusdominus/js/moment.min.js"></script>
+    <script src="lib/tempusdominus/js/moment-timezone.min.js"></script>
+    <script src="lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
+    <script>
+
+
+        const deleteReservation = (id) => {
+            fetch(`http://localhost:3000/api/reserve/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
+                }
+            })
+        }
+
+
+        const deleteFeedback = (id) => {
+            fetch(`http://localhost:3000/api/feedback/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
+                }
+            })
+        }
+
+        const deleteMenu = (id) => {
+            fetch(`http://localhost:3000/api/menuItems/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
+                }
+            })
+        }
+
+        const fetchReservation = async () => {
+            fetch('http://localhost:3000/api/reserve', {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    const reservationsTable = document.getElementById('reservationsTable').getElementsByTagName('tbody')[0];
+                    data.forEach(reservation => {
+                        const row = reservationsTable.insertRow();
+                        
+                        row.innerHTML = `
+                        <td>${reservation.ReservationID}</td>
+                        <td>${reservation.CustomerName}</td>
+                        <td>${reservation.CustomerEmail}</td>
+                        <td>${reservation.ReservationTime}</td>
+                        <td>${reservation.PartySize}</td>
+                        <td>
+                            <button class="btn btn-danger delete-btn" data-id="${reservation.ReservationID}">Delete</button>                        </td>
+                    `;
+                    });
+                    // Attach event listener to delete buttons
+                    const deleteButtons = document.querySelectorAll('.delete-btn');
+                    deleteButtons.forEach(button => {
+                        button.addEventListener('click', () => {
+                            const reservationId = button.dataset.id;
+                            deleteReservation(reservationId);
+                            window.location.reload();
+                        });
+                    });
+                }).catch(error => { console.error('Error fetching feedback:', error) });
+        }
+
+        // Function to fetch feedback
+        const fetchFeedback = async () => {
+            fetch('http://localhost:3000/api/feedback', {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    const feedbackTable = document.getElementById('feedbackTable').getElementsByTagName('tbody')[0];
+                    data.forEach(feedback => {
+                        const row = feedbackTable.insertRow();
+                        
+                        row.innerHTML = `
+                        <td>${feedback.FeedbackID}</td>
+                        <td>${feedback.UserName}</td>
+                        <td>${feedback.Comments}</td>
+                        <td>
+                            <button class="btn btn-danger delete-feedback" data-id="${feedback.FeedbackID}">Delete</button>                        </td>
+                    `;
+                    });
+                    // Attach event listener to delete buttons
+                    const deleteButtons = document.querySelectorAll('.delete-feedback');
+                    deleteButtons.forEach(button => {
+                        button.addEventListener('click', () => {
+                            const id = button.dataset.id;
+                            deleteFeedback(id);
+                            window.location.reload();
+                        });
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching feedback:', error);
+                });
+        }
+
+        // Function to fetch menu items
+        const fetchMenuItems = async () => {
+            fetch('http://localhost:3000/api/menuItems', {
+            })
+                .then(response => response.json())
+                .then(data => {
+                    const menuItemsTable = document.getElementById('menuItemsTable').getElementsByTagName('tbody')[0];
+                    data.forEach(menuItem => {
+                        const row = menuItemsTable.insertRow();
+                        
+                        row.innerHTML = `
+                        <td>${menuItem.id}</td>
+                        <td>${menuItem.name}</td>
+                        <td>${menuItem.description}</td>
+                        <td>${menuItem.price}</td>
+                        <td>
+                            <button class="btn btn-danger delete-menu" data-id="${menuItem.id}">Delete</button>                        </td>
+                    `
+                    });
+                    // Attach event listener to delete buttons
+                    const deleteButtons = document.querySelectorAll('.delete-menu');
+                    deleteButtons.forEach(button => {
+                        button.addEventListener('click', () => {
+                            const id = button.dataset.id;
+                            deleteMenu(id);
+                            window.location.reload();
+                        });
+                    });
+
+                })
+                .catch(error => {
+                    console.error('Error fetching menu items:', error);
+                });
+        }
+
+        // Fetch data when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchReservation();
+            fetchFeedback();
+            fetchMenuItems();
+        });
+
+
+
+        // function to additems to menu 
+        document.getElementById('addItemForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            // Retrieve form data
+            const formData = new FormData(addItemForm);
+            const data = {};
+            formData.forEach((value, key) => {
+                data[key] = value;
+            });
+
+
+            // Send form data to server
+            fetch('http://localhost:3000/api/menuItems', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to add menu item');
+                }
+                return response.json();
+            })
+            .then(result => {
+                alert('Menu item added successfully');
+                 window.location.reload();
+                // Clear form fields if needed
+                document.getElementById('addItemForm').reset();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to add menu item');
+            });
+           
+        });
+    </script>
+
+</body>
+
+</html>
